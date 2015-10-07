@@ -20,11 +20,27 @@
 package 'keepalived'
 
 if node['keepalived']['shared_address']
+  if node['platform_family'] == 'rhel'
+    directory '/etc/sysctl.d' do
+      mode '755'
+      owner 'root'
+      group 'root'
+      action :create
+    end
+  end
+
   file '/etc/sysctl.d/60-ip-nonlocal-bind.conf' do
     mode 0644
     content "net.ipv4.ip_nonlocal_bind=1\n"
   end
+end
 
+case node['platform_family']
+when 'rhel'
+  execute 'sysctl restart' do
+    command 'sysctl -e -p'
+  end
+when 'debian'
   service 'procps' do
     action :start
   end
