@@ -20,7 +20,8 @@
 package 'keepalived'
 
 if node['keepalived']['shared_address']
-  if node['platform_family'] == 'rhel'
+  case node['platform_family']
+  when 'rhel'
     directory '/etc/sysctl.d' do
       mode '755'
       owner 'root'
